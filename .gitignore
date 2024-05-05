@@ -35,3 +35,4 @@
 build/
 external/
 bin/
+.vscode/
