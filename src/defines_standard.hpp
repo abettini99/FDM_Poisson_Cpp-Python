@@ -4,53 +4,73 @@
 // unsigned int types //
 // ------------------ // 
 /** 8-bit unsigned integer */
-typedef unsigned char       u8;
+using u8  = unsigned char;
 /** 16-bit unsigned integer */
-typedef unsigned short     u16;
+using u16 = unsigned short;
 /** 32-bit unsigned integer */
-typedef unsigned int       u32;
+using u32 = unsigned int;
 /** 64-bit unsigned integer */
-typedef unsigned long long u64;
+using u64 = unsigned long long;
+
+
 
 // ---------------- //
 // signed int types //
 // ---------------- // 
 /** 8-bit signed integer */
-typedef signed char         i8;
+using i8  = signed char;
 /** 16-bit signed integer */
-typedef signed short       i16;
+using i16 = signed short;
 /** 32-bit signed integer */
-typedef signed int         i32;
+using i32 = signed int;
 /** 64-bit signed integer */
-typedef signed long long   i64;
+using i64 = signed long long;
+
 
 
 // -------------------- //
 // floating point types //
 // -------------------- // 
 /** 32-bit floating point */
-typedef float              f32;
+using f32 = float;
 /** 64-bit floating point */
-typedef double             f64;
+using f64 = double;
+
+
 
 // ------------- //
 // boolean types //
 // ------------- // 
 /** 32-bit boolean */
-typedef int                b32;
+using b32 = int;
 /** 8-bit boolean */
-typedef char                b8;
+using b8 =  char;
+
+
 
 // ------- //
 // boolean //
 // ------- // 
 /** true boolean (in text form) */
 #define TRUE         1
-#define EXIT_SUCCESS 1
 /** false boolean (in text form) */
 #define FALSE        0
-#define EXIT_FAILURE 0
 
+
+
+// ---------- //
+// exit codes //
+// ---------- // 
+/** exit code upon success */
+#define EXIT_SUCCESS          0
+/** exit code upon unknown failure */
+#define EXIT_FAILURE_UNKNOWN -1
+
+
+
+// ----------------- //
+// static assertions //
+// ----------------- // 
 // define static assertions
 #if defined(__clang__) || defined(__gcc__)
 /** compile time assertion (clang, gcc) */

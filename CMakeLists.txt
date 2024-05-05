@@ -22,10 +22,10 @@ target_sources(${PROJECT}
 
 target_include_directories(${PROJECT} 
     PRIVATE
-        # where the library itself will look for its internal headers
+        # where the project itself will look for internal headers
         ${PROJECT_SOURCE_DIR}/src/
     PUBLIC
-        # where top-level project will look for the library's public headers
+        # where project will look for public headers
         ${PROJECT_SOURCE_DIR}/external/eigen/
 )
 
