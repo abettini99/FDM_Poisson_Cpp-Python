@@ -18,6 +18,7 @@ add_executable(${PROJECT} main.cpp)
 target_sources(${PROJECT}
     # no need to add headers here, only sources are required
     PRIVATE
+        ${PROJECT_SOURCE_DIR}/src/insertCoefficients.cpp
 )
 
 target_include_directories(${PROJECT} 

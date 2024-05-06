@@ -4,7 +4,7 @@
  *    - Type alias: same as typedefs, but allows for templates, e.g. Vector<f64>, Vector<i32>.
  ************************************************************************************************************************/
 #include "defines_standard.hpp"
-#include "defines_eigen.hpp" // arguably, we do not really need this. 
+#include "defines_eigen.hpp"     // arguably, we do not really need this. 
 
 #include <vector>
 #include <iostream>
@@ -18,19 +18,19 @@ int main(){
     const f64 Ly[2] = {0., 1.};  /**< domain endpoints in y */
 
     // Calculate parameters
-    const u32 n = (imax-2)*(jmax-2);     /**< sparse matrix size component (n,n), boundaries excluded */
+    const u32 n = (imax-2)*(jmax-2); /**< sparse matrix size component (n,n), boundaries excluded */
 
-    // Declare and initalise 2D grid
-    EigenDefs::Array1D<f64> xGrid(imax); xGrid.setLinSpaced(Lx[0], Lx[1]); /**< x-domain gridpoints */
-    EigenDefs::Array1D<f64> yGrid(jmax); yGrid.setLinSpaced(Ly[0], Ly[1]); /**< y-domain gridpoints*/
+    // Declare and initalise 2D gridpoints
+    EigenDefs::Array1D<f64> xGrid; xGrid.setLinSpaced(imax, Lx[0], Lx[1]); /** x grid points */
+    EigenDefs::Array1D<f64> yGrid; yGrid.LinSpaced(jmax, Ly[0], Ly[1]); /** y grid points */
 
     // Declare problem matrices and vectors to solve: Ax = b
-    Eigen::SparseMatrix<f64> A(n, n);
-    EigenDefs::Vector<f64>   x(n);
-    EigenDefs::Vector<f64>   b(n);
+    Eigen::SparseMatrix<f64> A(n, n); /**< Sparse weights matrix */
+    EigenDefs::Vector<f64>   x(n);    /**< Solution vector */
+    EigenDefs::Vector<f64>   b(n);    /**< Forcing vector */
     
     // Fill out sparse matrix using a list of triplets (i,j,value)
-    std::vector< Eigen::Triplet<f64> > coefficients;
+    std::vector<  Eigen::Triplet<f64>  > coefficients;
 
     std::cout<<xGrid<<"\n";
 

@@ -1,7 +1,14 @@
+#pragma once
+
 #include "defines_standard.hpp"
 #include "Eigen/Sparse"
 
-
+/************************************************************************************************************************ 
+ *  @brief (Re)defined Eigen's typedefs are placed into this namespace.
+ * 
+ *  @details
+ *  All personalised typedefs (for Cpp, "typedef" is "using") related to the Eigen library are placed in this namespace.
+ ************************************************************************************************************************/
 namespace EigenDefs{
 
 // ------------ //
