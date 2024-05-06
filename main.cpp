@@ -4,7 +4,9 @@
  *    - Type alias: same as typedefs, but allows for templates, e.g. Vector<f64>, Vector<i32>.
  ************************************************************************************************************************/
 #include "defines_standard.hpp"
-#include "defines_eigen.hpp"     // arguably, we do not really need this. 
+#include "defines_eigen.hpp"     // arguably, we do not really need this.
+#include "mesh.hpp"
+#include "insertCoefficients.hpp"
 
 #include <vector>
 #include <iostream>
@@ -12,17 +14,25 @@
 int main(){
 
     // Provide parameters
-    const u32 imax  = 21;        /**< #gridpoints in x */
-    const u32 jmax  = 21;        /**< #gridpoints in y */
-    const f64 Lx[2] = {0., 2.};  /**< domain endpoints in x */
-    const f64 Ly[2] = {0., 1.};  /**< domain endpoints in y */
+    const u32 imax  = 11;                /**< #gridpoints in x */
+    const u32 jmax  = 11;                /**< #gridpoints in y */
+    const f64 Lx[2] = {0., 2.*EIGEN_PI}; /**< domain endpoints in x */
+    const f64 Ly[2] = {0., EIGEN_PI};    /**< domain endpoints in y */
 
     // Calculate parameters
-    const u32 n = (imax-2)*(jmax-2); /**< sparse matrix size component (n,n), boundaries excluded */
+    const u32 n = (imax-2)*(jmax-2);     /**< sparse matrix size component (n,n), boundaries excluded */
 
-    // Declare and initalise 2D gridpoints
-    EigenDefs::Array1D<f64> xGrid; xGrid.setLinSpaced(imax, Lx[0], Lx[1]); /** x grid points */
-    EigenDefs::Array1D<f64> yGrid; yGrid.LinSpaced(jmax, Ly[0], Ly[1]); /** y grid points */
+    // Declare and initalise 2D gridpoint list
+    Mesh::gridStruct grid;
+    grid.x.setLinSpaced(imax, Lx[0], Lx[1]);
+    grid.y.setLinSpaced(jmax, Ly[0], Ly[1]);
+
+    // Declare and initialise boundary condition list
+    Mesh::boundaryStruct boundaries;
+    boundaries.North.setZero(imax);
+    boundaries.West.setZero(jmax);
+    boundaries.South.setZero(imax);
+    boundaries.East = Eigen::sin(grid.y);
 
     // Declare problem matrices and vectors to solve: Ax = b
     Eigen::SparseMatrix<f64> A(n, n); /**< Sparse weights matrix */
@@ -31,8 +41,29 @@ int main(){
     
     // Fill out sparse matrix using a list of triplets (i,j,value)
     std::vector<  Eigen::Triplet<f64>  > coefficients;
+    for (u32 i=1; i<imax-1; i++){
+        for (u32 j=1; j<jmax-1; j++){
 
-    std::cout<<xGrid<<"\n";
+            // Calculate grid spacing necessary from full grid
+            f64 dx1 = grid.x[i]   - grid.x[i-1];
+            f64 dx2 = grid.x[i+1] - grid.x[i];
+            f64 dy1 = grid.y[j]   - grid.y[j-1];
+            f64 dy2 = grid.y[j+1] - grid.y[j];
+
+            // We do not consider boundary conditions in the sparse matrix, so we need to consider correct for index
+            u32 ii = i-1;
+            u32 ji = j-1;
+            u32 idx = ji + ii*(imax-2);
+            std::cout<<idx<<"\n";
+            insertCoefficient(idx,ii-1,ji,   2/( dx1*(dx1+dx2) ),     coefficients, b, boundaries);
+            insertCoefficient(idx,ii+1,ji,   2/( dx2*(dx1+dx2) ),     coefficients, b, boundaries);
+            insertCoefficient(idx,ii,  ji-1, 2/( dy1*(dy1+dy2) ),     coefficients, b, boundaries);
+            insertCoefficient(idx,ii,  ji+1, 2/( dy2*(dy1+dy2) ),     coefficients, b, boundaries);
+            insertCoefficient(idx,ii,  ji,  -2/(dx1*dx2)-2/(dy1*dy2), coefficients, b, boundaries);
+        }
+    }
+
+    // ... A.setFromTriplets(coefficients.begin(), coefficients.end());
 
     return EXIT_SUCCESS;
 }

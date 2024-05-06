@@ -64,4 +64,4 @@ template<typename Type> using Array1D = Eigen::Array<Type, Eigen::Dynamic, 1>;
 template<typename Type> using Array2D = Eigen::Array<Type, Eigen::Dynamic, Eigen::Dynamic>;
 
 
-} // end of EigenDefs
+} // namespace EigenDefs
