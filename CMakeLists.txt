@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.29.2)    # CMake version check
+cmake_minimum_required(VERSION 3.22.1)    # CMake version check
 set(CMAKE_CXX_STANDARD 23)                # Enable C++23 standard
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
@@ -26,7 +26,7 @@ target_include_directories(${PROJECT}
         # where the project itself will look for internal headers
         ${PROJECT_SOURCE_DIR}/src/
     PUBLIC
-        # where project will look for public headers
+        # where the project will look for public headers
         ${PROJECT_SOURCE_DIR}/external/eigen/
 )
 

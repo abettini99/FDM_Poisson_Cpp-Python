@@ -11,6 +11,9 @@
 #include <vector>
 #include <iostream>
 
+/************************************************************************************************************************
+ * Solve -div(grad(u)) = f, f = 0
+ ************************************************************************************************************************/
 int main(){
 
     // Provide parameters
@@ -30,19 +33,20 @@ int main(){
     // Declare and initialise boundary condition list
     Mesh::boundaryStruct boundaries;
     boundaries.North.setZero(imax);
-    boundaries.West.setZero(jmax);
+    boundaries.West = Eigen::sin(grid.y);
     boundaries.South.setZero(imax);
-    boundaries.East = Eigen::sin(grid.y);
+    boundaries.East.setZero(jmax);
 
-    // Declare problem matrices and vectors to solve: Ax = b
+    // Declare problem matrices and vectors to solve: Au = b
     Eigen::SparseMatrix<f64> A(n, n); /**< Sparse weights matrix */
-    EigenDefs::Vector<f64>   x(n);    /**< Solution vector */
+    EigenDefs::Vector<f64>   u(n);    /**< Solution vector */
     EigenDefs::Vector<f64>   b(n);    /**< Forcing vector */
+    b.setZero();
     
     // Fill out sparse matrix using a list of triplets (i,j,value)
-    std::vector<  Eigen::Triplet<f64>  > coefficients;
-    for (u32 i=1; i<imax-1; i++){
-        for (u32 j=1; j<jmax-1; j++){
+    std::vector<  Eigen::Triplet<f64>  > coefficients; /**< List of triplets to fill out sparse matrix with */
+    for (i64 i=1; i<imax-1; i++){
+        for (i64 j=1; j<jmax-1; j++){
 
             // Calculate grid spacing necessary from full grid
             f64 dx1 = grid.x[i]   - grid.x[i-1];
@@ -51,19 +55,23 @@ int main(){
             f64 dy2 = grid.y[j+1] - grid.y[j];
 
             // We do not consider boundary conditions in the sparse matrix, so we need to consider correct for index
-            u32 ii = i-1;
-            u32 ji = j-1;
-            u32 idx = ji + ii*(imax-2);
-            std::cout<<idx<<"\n";
-            insertCoefficient(idx,ii-1,ji,   2/( dx1*(dx1+dx2) ),     coefficients, b, boundaries);
-            insertCoefficient(idx,ii+1,ji,   2/( dx2*(dx1+dx2) ),     coefficients, b, boundaries);
-            insertCoefficient(idx,ii,  ji-1, 2/( dy1*(dy1+dy2) ),     coefficients, b, boundaries);
-            insertCoefficient(idx,ii,  ji+1, 2/( dy2*(dy1+dy2) ),     coefficients, b, boundaries);
-            insertCoefficient(idx,ii,  ji,  -2/(dx1*dx2)-2/(dy1*dy2), coefficients, b, boundaries);
+            const i32 ii = i-1;
+            const i32 ij = j-1;
+            const i32 idx = ii + ij*(imax-2); // iimax = imax - 2
+            
+            insertCoefficient(idx,ii,  ij-1, -2/( dy1*(dy1+dy2) ),     coefficients, b, boundaries);
+            insertCoefficient(idx,ii-1,ij,   -2/( dx1*(dx1+dx2) ),     coefficients, b, boundaries);
+            insertCoefficient(idx,ii,  ij,    2/(dx1*dx2)+2/(dy1*dy2), coefficients, b, boundaries);
+            insertCoefficient(idx,ii+1,ij,   -2/( dx2*(dx1+dx2) ),     coefficients, b, boundaries);
+            insertCoefficient(idx,ii,  ij+1, -2/( dy2*(dy1+dy2) ),     coefficients, b, boundaries);
         }
     }
+    A.setFromTriplets(coefficients.begin(), coefficients.end());
 
-    // ... A.setFromTriplets(coefficients.begin(), coefficients.end());
-
+    // Solve problem for u (Au = b)
+    // see https://eigen.tuxfamily.org/dox/group__TutorialSparse.html
+    Eigen::SimplicialCholesky<Eigen::SparseMatrix<f64>> chol(A);  /**< Cholesky factorization of A */
+    u = chol.solve(b);                                            // use the factorization to solve for the given right hand side
+ 
     return EXIT_SUCCESS;
 }

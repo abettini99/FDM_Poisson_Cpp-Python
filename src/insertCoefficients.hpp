@@ -6,7 +6,7 @@
 
 #include <vector>
 
-void insertCoefficient( i64 idx, i64 i, i64 j, f64 weight,
-                        std::vector<  Eigen::Triplet<f64>  > coefficients,
-                        EigenDefs::Vector<f64>               forceVector,
-                        Mesh::boundaryStruct                 boundaryConditions);
+void insertCoefficient( i64 idx, i64 ii, i64 ij, f64 weight,
+                        std::vector<  Eigen::Triplet<f64>  > &coefficients,
+                        EigenDefs::Vector<f64>               &forceVector,
+                        Mesh::boundaryStruct                 &boundaryConditions);
