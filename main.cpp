@@ -45,8 +45,8 @@ int main(){
     
     // Fill out sparse matrix using a list of triplets (i,j,value)
     std::vector<  Eigen::Triplet<f64>  > coefficients; /**< List of triplets to fill out sparse matrix with */
-    for (i64 i=1; i<imax-1; i++){
-        for (i64 j=1; j<jmax-1; j++){
+    for (i64 j=1; j<jmax-1; j++){
+        for (i64 i=1; i<imax-1; i++){
 
             // Calculate grid spacing necessary from full grid
             f64 dx1 = grid.x[i]   - grid.x[i-1];
@@ -73,5 +73,8 @@ int main(){
     Eigen::SimplicialCholesky<Eigen::SparseMatrix<f64>> chol(A);  /**< Cholesky factorization of A */
     u = chol.solve(b);                                            // use the factorization to solve for the given right hand side
  
+
+    std::cout<<u<<"\n";
+
     return EXIT_SUCCESS;
 }
