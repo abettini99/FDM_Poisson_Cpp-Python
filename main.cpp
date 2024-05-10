@@ -6,25 +6,32 @@
 #include "defines_standard.hpp"
 #include "defines_eigen.hpp"     // arguably, we do not really need this.
 #include "mesh.hpp"
-#include "insertCoefficients.hpp"
 
 #include <vector>
+#include <fstream>
 #include <iostream>
 
 /************************************************************************************************************************
- * Solve -div(grad(u)) = f, f = 0
+ * Solve -div(grad(u)) = f, f = 0, using FDM
  ************************************************************************************************************************/
 int main(){
 
-    // Provide parameters
-    const u32 imax  = 11;                /**< #gridpoints in x */
-    const u32 jmax  = 11;                /**< #gridpoints in y */
-    const f64 Lx[2] = {0., 2.*EIGEN_PI}; /**< domain endpoints in x */
-    const f64 Ly[2] = {0., EIGEN_PI};    /**< domain endpoints in y */
+    //## ================== ##//
+    //## Provide parameters ##//
+    //## ================== ##//
+    const u32 imax  = 21;              /**< #gridpoints in x */
+    const u32 jmax  = 21;              /**< #gridpoints in y */
+    const f64 Lx[2] = {0., 1.*EIGEN_PI}; /**< domain endpoints in x */
+    const f64 Ly[2] = {0., 1.*EIGEN_PI}; /**< domain endpoints in y */
 
-    // Calculate parameters
-    const u32 n = (imax-2)*(jmax-2);     /**< sparse matrix size component (n,n), boundaries excluded */
+    //## ==================== ##//
+    //## Calculate parameters ##//
+    //## ==================== ##//
+    const u32 n = imax*jmax;     /**< sparse matrix size component (n,n), boundaries included */
 
+    //## ============= ##//
+    //## Problem Setup ##//
+    //## ============= ##//
     // Declare and initalise 2D gridpoint list
     Mesh::gridStruct grid;
     grid.x.setLinSpaced(imax, Lx[0], Lx[1]);
@@ -44,9 +51,10 @@ int main(){
     b.setZero();
     
     // Fill out sparse matrix using a list of triplets (i,j,value)
+    // Internal
     std::vector<  Eigen::Triplet<f64>  > coefficients; /**< List of triplets to fill out sparse matrix with */
-    for (i64 j=1; j<jmax-1; j++){
-        for (i64 i=1; i<imax-1; i++){
+    for (u32 j=1; j<jmax-1; j++){
+        for (u32 i=1; i<imax-1; i++){
 
             // Calculate grid spacing necessary from full grid
             f64 dx1 = grid.x[i]   - grid.x[i-1];
@@ -54,27 +62,80 @@ int main(){
             f64 dy1 = grid.y[j]   - grid.y[j-1];
             f64 dy2 = grid.y[j+1] - grid.y[j];
 
-            // We do not consider boundary conditions in the sparse matrix, so we need to consider correct for index
-            const i32 ii = i-1;
-            const i32 ij = j-1;
-            const i32 idx = ii + ij*(imax-2); // iimax = imax - 2
-            
-            insertCoefficient(idx,ii,  ij-1, -2/( dy1*(dy1+dy2) ),     coefficients, b, boundaries);
-            insertCoefficient(idx,ii-1,ij,   -2/( dx1*(dx1+dx2) ),     coefficients, b, boundaries);
-            insertCoefficient(idx,ii,  ij,    2/(dx1*dx2)+2/(dy1*dy2), coefficients, b, boundaries);
-            insertCoefficient(idx,ii+1,ij,   -2/( dx2*(dx1+dx2) ),     coefficients, b, boundaries);
-            insertCoefficient(idx,ii,  ij+1, -2/( dy2*(dy1+dy2) ),     coefficients, b, boundaries);
+            // We consider BCs in the sparse matrix problem, we fill in general pattern.
+            const u32 idx = j*imax + i;
+            u32 idx1;
+            idx1 = (j-1)*imax + (i)  ; coefficients.push_back(  Eigen::Triplet<f64>(idx,idx1, -2./( dy1*(dy1+dy2) ))  );
+            idx1 = (j)  *imax + (i-1); coefficients.push_back(  Eigen::Triplet<f64>(idx,idx1, -2./( dx1*(dx1+dx2) ))  );
+            idx1 = (j)  *imax + (i)  ; coefficients.push_back(  Eigen::Triplet<f64>(idx,idx1,  2./(dx1*dx2)+2./(dy1*dy2))  );
+            idx1 = (j)  *imax + (i+1); coefficients.push_back(  Eigen::Triplet<f64>(idx,idx1, -2./( dx2*(dx1+dx2) ))  );
+            idx1 = (j+1)*imax + (i)  ; coefficients.push_back(  Eigen::Triplet<f64>(idx,idx1, -2./( dy2*(dy1+dy2) ))  );
         }
     }
+    // South Boundary
+    u32 j=0;
+    for (u32 i=1; i<imax-1; i++){
+        const u32 idx = j*imax + i;
+        coefficients.push_back(  Eigen::Triplet<f64>(idx,idx,1)  );
+        b[idx] = boundaries.South[i];
+    }
+    // North Boundary
+    j=jmax-1;
+    for (u32 i=1; i<imax-1; i++){
+        const u32 idx = j*imax + i;
+        coefficients.push_back(  Eigen::Triplet<f64>(idx,idx,1)  );
+        b[idx] = boundaries.North[i];
+    }
+    // West Boundary
+    i64 i=0;
+    for (u32 j=0; j<jmax; j++){
+        const u32 idx = j*imax + i;
+        coefficients.push_back(  Eigen::Triplet<f64>(idx,idx,1)  );
+        b[idx] = boundaries.West[j];
+    }
+    // East Boundary
+    i=imax-1;
+    for (u32 j=0; j<jmax; j++){
+        const u32 idx = j*imax + i;
+        coefficients.push_back(  Eigen::Triplet<f64>(idx,idx,1)  );
+        b[idx] = boundaries.East[j];
+    }
+    // Fill out sparse matrix
     A.setFromTriplets(coefficients.begin(), coefficients.end());
 
-    // Solve problem for u (Au = b)
-    // see https://eigen.tuxfamily.org/dox/group__TutorialSparse.html
-    Eigen::SimplicialCholesky<Eigen::SparseMatrix<f64>> chol(A);  /**< Cholesky factorization of A */
-    u = chol.solve(b);                                            // use the factorization to solve for the given right hand side
+    //## ================ ##//
+    //## Solution Routine ##//
+    //## ================ ##//
+    // - see https://eigen.tuxfamily.org/dox/group__TutorialSparse.html
+    // - see https://eigen.tuxfamily.org/dox/classEigen_1_1SparseLU.html
+    Eigen::SparseLU<Eigen::SparseMatrix<f64>> solver(A);  /**< LU factorization of A */
+    solver.analyzePattern(A); // Compute the column permutation to minimize the fill-in
+    solver.factorize(A);      // Compute the numerical factorization 
+    u = solver.solve(b);      // use the factorization to solve for the given right hand side
  
+    std::cout<<u.reshaped(jmax,imax)<<"\n";
 
-    std::cout<<u<<"\n";
+    //## =============== ##//
+    //## Export solution ##//
+    //## =============== ##//
+    std::ofstream dataFile("data.bin", std::ios::out | std::ios::binary | std::ios::app); /**< Data output file */
+    u32 idx = 0;
+    for (u32 j=0; j<jmax; j++){
+        for (u32 i=0; i<imax; i++){
+            // Plotting / postprocessing currently does not need to be done in such high precision
+            f32 xPoint = (float) grid.x[i]; /**< f32 x-position */
+            f32 yPoint = (float) grid.y[j]; /**< f32 y-position */
+            f32 uPoint = (float) u[idx];    /**< f32 u-solution */
+
+            dataFile.write(reinterpret_cast<const char*>(&xPoint), sizeof(&xPoint));
+            dataFile.write(reinterpret_cast<const char*>(&yPoint), sizeof(&yPoint));
+            dataFile.write(reinterpret_cast<const char*>(&uPoint), sizeof(&uPoint));
+            idx++;
+        }
+    }
+    dataFile.close();
+
+    std::cout<<"Finished!\n";
 
     return EXIT_SUCCESS;
 }
