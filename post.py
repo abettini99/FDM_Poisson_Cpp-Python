@@ -15,14 +15,14 @@ x, y, u  = readDataBinary(fileName) # u[j,i], not u[i,j]
 
 # Get gradients of solution
 dudy,    dudx    = np.gradient(u,    y[:,0], x[0,:], edge_order=2)
-du2dydy, du2dydx = np.gradient(dudy, y[:,0], x[0,:], edge_order=2)
-du2dxdy, du2dxdx = np.gradient(dudx, y[:,0], x[0,:], edge_order=2)
+d2udydy, d2udydx = np.gradient(dudy, y[:,0], x[0,:], edge_order=2)
+d2udxdy, d2udxdx = np.gradient(dudx, y[:,0], x[0,:], edge_order=2)
 
 # Calculate curl(grad(u)) : should be zero everywhere (or close to it)
-curlgradu = du2dydx - du2dxdy
+curlgradu = d2udydx - d2udxdy
 
 # Calculate div(grad(u))  : should be source term everywhere (or close to it)
-divgradu  = du2dxdx + du2dydy
+divgradu  = d2udxdx + d2udydy
 
 ##// ======== //##
 ##// Plotting //##
