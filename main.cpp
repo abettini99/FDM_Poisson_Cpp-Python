@@ -118,9 +118,9 @@ int main(){
     //## =============== ##//
     //## Export solution ##//
     //## =============== ##//
-    std::ofstream dataFile("data.bin", std::ios::out | std::ios::binary | std::ios::app); /**< Data output file */
-    dataFile.write(reinterpret_cast<const char*>(&imax), sizeof(&jmax));
-    dataFile.write(reinterpret_cast<const char*>(&jmax), sizeof(&imax));
+    std::ofstream dataFile("data.bin", std::ios::binary | std::ios::app); /**< Data output file */
+    dataFile.write(reinterpret_cast<const char*>(&imax), sizeof(imax));
+    dataFile.write(reinterpret_cast<const char*>(&jmax), sizeof(jmax));
 
     u32 idx = 0;
     for (u32 j=0; j<jmax; j++){
@@ -130,9 +130,9 @@ int main(){
             f32 yPoint = (float) grid.y[j]; /**< f32 y-position */
             f32 uPoint = (float) u[idx];    /**< f32 u-solution */
 
-            dataFile.write(reinterpret_cast<const char*>(&xPoint), sizeof(&xPoint));
-            dataFile.write(reinterpret_cast<const char*>(&yPoint), sizeof(&yPoint));
-            dataFile.write(reinterpret_cast<const char*>(&uPoint), sizeof(&uPoint));
+            dataFile.write(reinterpret_cast<const char*>(&xPoint), sizeof(xPoint));
+            dataFile.write(reinterpret_cast<const char*>(&yPoint), sizeof(yPoint));
+            dataFile.write(reinterpret_cast<const char*>(&uPoint), sizeof(uPoint));
             idx++;
         }
     }
