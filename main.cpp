@@ -119,6 +119,9 @@ int main(){
     //## Export solution ##//
     //## =============== ##//
     std::ofstream dataFile("data.bin", std::ios::out | std::ios::binary | std::ios::app); /**< Data output file */
+    dataFile.write(reinterpret_cast<const char*>(&imax), sizeof(&jmax));
+    dataFile.write(reinterpret_cast<const char*>(&jmax), sizeof(&imax));
+
     u32 idx = 0;
     for (u32 j=0; j<jmax; j++){
         for (u32 i=0; i<imax; i++){
