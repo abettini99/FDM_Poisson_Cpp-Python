@@ -120,7 +120,7 @@ int main(){
     //## =============== ##//
     //## Export solution ##//
     //## =============== ##//
-    std::ofstream dataFile("data.bin", std::ios::binary | std::ios::app); /**< Data output file */
+    std::ofstream dataFile("data.bin", std::ios::out | std::ios::binary | std::ios::trunc); /**< Data output file, not using std::ios::app */ 
     dataFile.write(reinterpret_cast<const char*>(&imax), sizeof(imax));
     dataFile.write(reinterpret_cast<const char*>(&jmax), sizeof(jmax));
 

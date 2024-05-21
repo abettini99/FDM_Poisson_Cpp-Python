@@ -3,7 +3,7 @@ import numpy.typing as npt
 import matplotlib.pyplot as plt
 
 from src.post.readDataBinary import readDataBinary
-from src.post.plotContour import plotContour
+from src.post.plotFilledContour import plotFilledContour
 
 ##// ============== //##
 ##// Postprocessing //##
@@ -28,8 +28,20 @@ divgradu  = du2dxdx + du2dydy
 ##// Plotting //##
 ##// ======== //##
 
-# plt.contourf(x,y,u)
+plotFilledContour(x,y,u,         
+                  levels=10,
+                  title =r'$u\,\,[-]$',
+                  xlabel=r'$x\,\,[-]$',
+                  ylabel=r'$y\,\,[-]$')
+plotFilledContour(x,y,curlgradu, 
+                  levels=10,
+                  title =r'$\nabla\times\nabla u\,\,[-]$',
+                  xlabel=r'$x\,\,[-]$',
+                  ylabel=r'$y\,\,[-]$')
+plotFilledContour(x,y,divgradu,  
+                  levels=10,
+                  title =r'$\nabla\cdot\nabla u\,\,[-]$',
+                  xlabel=r'$x\,\,[-]$',
+                  ylabel=r'$y\,\,[-]$')
 
-
-plt.contourf(x,y,curlgradu)
 plt.show()
