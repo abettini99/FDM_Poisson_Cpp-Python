@@ -1,7 +1,7 @@
 #pragma once
 
-#include "defines_standard.hpp" 
-#include "defines_eigen.hpp" 
+#include "definesStandard.hpp" 
+#include "definesEigen.hpp" 
 
 namespace Mesh{
 

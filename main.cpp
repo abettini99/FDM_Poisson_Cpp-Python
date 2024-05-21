@@ -3,16 +3,17 @@
  *    - Typedefs:   used to create an additional name for another data type, but does not create a new type.
  *    - Type alias: same as typedefs, but allows for templates, e.g. Vector<f64>, Vector<i32>.
  ************************************************************************************************************************/
-#include "defines_standard.hpp"
-#include "defines_eigen.hpp"     // arguably, we do not really need this.
+#include "definesStandard.hpp"
+#include "definesEigen.hpp"     // arguably, we do not really need this.
 #include "mesh.hpp"
+#include "valueSource.hpp"
 
 #include <vector>
 #include <fstream>
 #include <iostream>
 
 /************************************************************************************************************************
- * Solve -div(grad(u)) = f, f = 0, using FDM
+ * Solve -div(grad(u)) = f, using FDM
  ************************************************************************************************************************/
 int main(){
 
@@ -62,7 +63,7 @@ int main(){
             f64 dy1 = grid.y[j]   - grid.y[j-1];
             f64 dy2 = grid.y[j+1] - grid.y[j];
 
-            // We consider BCs in the sparse matrix problem, we fill in general pattern.
+            // We consider BCs in the sparse matrix problem, fill general pattern in A matrix.
             const u32 idx = j*imax + i;
             u32 idx1;
             idx1 = (j-1)*imax + (i)  ; coefficients.push_back(  Eigen::Triplet<f64>(idx,idx1, -2./( dy1*(dy1+dy2) ))  );
@@ -70,6 +71,9 @@ int main(){
             idx1 = (j)  *imax + (i)  ; coefficients.push_back(  Eigen::Triplet<f64>(idx,idx1,  2./(dx1*dx2)+2./(dy1*dy2))  );
             idx1 = (j)  *imax + (i+1); coefficients.push_back(  Eigen::Triplet<f64>(idx,idx1, -2./( dx2*(dx1+dx2) ))  );
             idx1 = (j+1)*imax + (i)  ; coefficients.push_back(  Eigen::Triplet<f64>(idx,idx1, -2./( dy2*(dy1+dy2) ))  );
+            
+            // Fill source term in b vector.
+            b[idx] = valueSource(grid.x[i], grid.y[j]);
         }
     }
     // South Boundary
@@ -112,8 +116,6 @@ int main(){
     solver.analyzePattern(A); // Compute the column permutation to minimize the fill-in
     solver.factorize(A);      // Compute the numerical factorization 
     u = solver.solve(b);      // use the factorization to solve for the given right hand side
- 
-    std::cout<<u.reshaped(jmax,imax)<<"\n";
 
     //## =============== ##//
     //## Export solution ##//
@@ -138,7 +140,7 @@ int main(){
     }
     dataFile.close();
 
-    std::cout<<"Finished!\n";
+    std::cout<<"Finished solving Poisson problem!\n";
 
     return EXIT_SUCCESS;
 }

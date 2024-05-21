@@ -40,4 +40,4 @@ def readDataBinary(fileName: str) -> tuple[npt.NDArray[np.float32],
 
     return  data[:,0].reshape((jmax,imax)), \
             data[:,1].reshape((jmax,imax)), \
-            data[:,2].reshape((jmax,imax)) # (x,y,u)
+            data[:,2].reshape((jmax,imax))  # (x,y,u)
