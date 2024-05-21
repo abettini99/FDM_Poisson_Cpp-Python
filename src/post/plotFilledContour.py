@@ -4,7 +4,18 @@ import numpy.typing as npt
 from typing import Any
 plt.style.use('src/post/plotting.style')
 
-
+## @brief Creates a contour plot.
+#
+#  @param x      2D numpy array of data x-positions
+#  @param y      2D numpy array of data y-positions
+#  @param f      2D numpy array of data values
+#  @param levels the number of visible contours, default 10
+#  @param title  the title of the plot, default none
+#  @param xlabel the x-label of the plot, default none
+#  @param ylabel the y-label of the plot, default none
+#
+#  @return fig   container of all plot elements
+#  @return ax    (list of) container(s) of all elements of individual (sub-)plot in the \p fig.
 def plotFilledContour(x : npt.NDArray[np.float64], y : npt.NDArray[np.float64], f : npt.NDArray[np.float64], 
                       levels : int = 10,
                       title  : str = None,

@@ -27,17 +27,19 @@ divgradu  = du2dxdx + du2dydy
 ##// ======== //##
 ##// Plotting //##
 ##// ======== //##
-
+# solution plot
 plotFilledContour(x,y,u,         
                   levels=10,
                   title =r'$u\,\,[-]$',
                   xlabel=r'$x\,\,[-]$',
                   ylabel=r'$y\,\,[-]$')
+# curl(grad(u)) plot
 plotFilledContour(x,y,curlgradu, 
                   levels=10,
                   title =r'$\nabla\times\nabla u\,\,[-]$',
                   xlabel=r'$x\,\,[-]$',
                   ylabel=r'$y\,\,[-]$')
+# div(grad(u)) plot
 plotFilledContour(x,y,divgradu,  
                   levels=10,
                   title =r'$\nabla\cdot\nabla u\,\,[-]$',
