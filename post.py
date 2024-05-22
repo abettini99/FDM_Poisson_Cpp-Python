@@ -1,5 +1,5 @@
 import numpy as np
-import numpy.typing as npt
+import numpy.ma as ma
 import matplotlib.pyplot as plt
 
 import src.post.binaryData as BinaryData
@@ -34,15 +34,15 @@ FilledContour.plot(x,y,u,
                    xlabel=r'$x\,\,[-]$',
                    ylabel=r'$y\,\,[-]$')
 # curl(grad(u)) plot
-FilledContour.plot(x,y,curlgradu, 
+FilledContour.plot(x,y,ma.log10(  ma.masked_where(curlgradu==0, np.abs(curlgradu))  ), 
                    levels=10,
-                   title =r'$\nabla\times\nabla u\,\,[-]$',
+                   title =r'$\log_{10}\,|\nabla\times\nabla u|\,\,[-]$',
                    xlabel=r'$x\,\,[-]$',
                    ylabel=r'$y\,\,[-]$')
 # div(grad(u)) plot
-FilledContour.plot(x,y,divgradu,  
+FilledContour.plot(x,y,-divgradu,  
                    levels=10,
-                   title =r'$\nabla\cdot\nabla u\,\,[-]$',
+                   title =r'$-\nabla\cdot\nabla u\,\,[-]$',
                    xlabel=r'$x\,\,[-]$',
                    ylabel=r'$y\,\,[-]$')
 

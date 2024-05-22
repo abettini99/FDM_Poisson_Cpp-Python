@@ -3,11 +3,9 @@
  *    - Typedefs:   used to create an additional name for another data type, but does not create a new type.
  *    - Type alias: same as typedefs, but allows for templates, e.g. Vector<f64>, Vector<i32>.
  ************************************************************************************************************************/
-#include "core/definesStandard.hpp"
-#include "core/definesEigen.hpp"     // arguably, we do not really need this.
-#include "core/logger.hpp"
-#include "mesh.hpp"
-#include "valueSource.hpp"
+#include "CoreIncludes.hpp"
+#include "mesh/mesh.hpp"
+#include "mesh/valueSource.hpp"
 
 #include <vector>
 #include <fstream>
@@ -114,40 +112,61 @@ int main(){
 
     INFO_MSG("Matrix-Vector setup finished");
 
-
     //## ================ ##//
     //## Solution Routine ##//
     //## ================ ##//
-    // Conjugate Gradient
+    // Diagonal Preconditioner
+    // - see https://diamhomes.ewi.tudelft.nl/~mvangijzen/PhDCourse_DTU/LES5/TRANSPARANTEN/les5.pdf 
+    // - see Section 4.1 https://homepage.tudelft.nl/d2b4e/burgers/lin_notes.pdf
+    Eigen::SparseMatrix<f64> Mm1(n,n);          /**< Inversed Preconditioner M^-1*/
+    Mm1 = A.diagonal().asDiagonal().inverse();
+
+    // Preconditioned Conjugate Gradient (PCG)
     // - see Section 3.1 https://homepage.tudelft.nl/d2b4e/burgers/lin_notes.pdf
-    u32 kappa = 0;
-    u32 kappaMax = 5000;
-    f64 tol = 1e-6;
-    f64 err = 1/0.0;
-    EigenDefs::Vector<f64> rk(n);
-    EigenDefs::Vector<f64> rkm1(n);
-    EigenDefs::Vector<f64> rkm2(n);
-    EigenDefs::Vector<f64> pk(n);
+    // - see Section 4.1 https://homepage.tudelft.nl/d2b4e/burgers/lin_notes.pdf
+
+    // Initialization
+    u32 kappa = 0;          /**< iterate number*/
+    u32 kappaMax = 5000;    /**< max iterate allowed */
+    f64 tol = 1e-15;        /**< acceptable tolerance */
+    f64 err = 1/0.0;        /**< residual error */
+    EigenDefs::Vector<f64> rk(n), rkm1(n), rkm2(n); /**< residual vector */
+    EigenDefs::Vector<f64> zk(n), zkm1(n), zkm2(n); /**< preconditioned residual vector */
+    EigenDefs::Vector<f64> pk(n);                   /**< search/conjugate direction vector */
+    EigenDefs::Vector<f64> Apk(n);                  /**< search/conjugate direction vector */
+    f64 alphak, betak;                              /**< update coefficients */
     rk = b - A*u;
-    f64 alphak, betak;
-    
-    while ((kappa < kappaMax) && (err > tol)){
-        kappa++; rkm2 = 1.*rkm1; rkm1 = 1.*rk; 
-        if (kappa==1) pk = 1.*rk;
+
+    do {
+
+        // Calculate preconditioning residual vector
+        zk = Mm1*rk;                            
+
+        // Update kappa
+        kappa++;
+        rkm2 = rkm1; rkm1 = rk; 
+        zkm2 = zkm1; zkm1 = zk;
+
+        // Update of pk (search direction)
+        if (kappa==1) pk = zk;
         else{
-            betak = rkm1.dot(rkm1) / rkm2.dot(rkm2);
-            pk    = rkm1 + betak*pk;
+            betak = rkm1.dot(zkm1) / rkm2.dot(zkm2);
+            pk    = zkm1 + betak*pk;
         }
-        alphak = rkm1.dot(rkm1) / pk.dot(A*pk);
+
+        // Update iterate
+        Apk = A*pk;
+        alphak = rkm1.dot(zkm1) / pk.dot(Apk);
         u = u + alphak*pk;
-        rk = rkm1 - alphak*A*pk;
+
+        // Update residual
+        rk = rkm1 - alphak*Apk;
 
         err = std::sqrt( rk.dot(rk)/rk.size() );
-        if (kappa%50 == 0) INFO_MSG("kappa = %-5u err = %1.4e", kappa, err);
-    }
+        INFO_MSG("kappa = %-5u err = %1.4e", kappa, err);
+    } while ((kappa < kappaMax) && (err > tol)); // Termination criteria
     
-    
-    
+
     // - see https://eigen.tuxfamily.org/dox/group__TutorialSparse.html
     // - see https://eigen.tuxfamily.org/dox/classEigen_1_1SparseLU.html
     // Eigen::SparseLU<Eigen::SparseMatrix<f64>> solver(A);  /**< LU factorization of A */

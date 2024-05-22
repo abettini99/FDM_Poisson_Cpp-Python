@@ -1,12 +1,11 @@
-#include "core/logger.hpp"
-
+#include "logger.hpp"
 
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 
 
-void logger::logOutput(logLevel level, const char* message, ...){
+void logOutput(logLevel level, const char* message, ...){
     const char* levelStrings[6] = { "[FATAL]: ", 
                                     "[ERROR]: ", 
                                     "[WARN] : ", 

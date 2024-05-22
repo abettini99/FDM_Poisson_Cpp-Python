@@ -1,5 +1,6 @@
 #pragma once
-#include "core/definesStandard.hpp"
+
+#include "definesStandard.hpp"
 
 /** Enable logging of warning statements */
 #define LOG_WARN_ENABLED  1
@@ -28,38 +29,29 @@ typedef enum logLevel{
 } logLevel;
 
 
+
 /************************************************************************************************************************
- *  @brief   logger encapsulates all logging things.
- *
- *  @details All classes, and functions that relay information to a text-based terminal are maintained in the logger 
- *           namespace
- ************************************************************************************************************************/
-namespace logger{
-
-    /************************************************************************************************************************
-    *  @brief   Writes to the console a log message of \p level severity.
-    * 
-    *  @details A message function purely intended for logging purposes. 
-    * 
-    *           Example:
-    * 
-    *           @code{.cpp}
-    *           logger::logOutput(LOG_LEVEL_FATAL, "I took a bullet to the %s and i am %s.", "head", "hurt")
-    *           @endcode
-    * 
-    *           would print out:
-    * 
-    *           [FATAL] I took a bullet to the head and i am hurt.
-    *
-    *  @param level   a level from the @ref logLevel struct, used purely for visual purposes
-    *  @param message a message with format specifics included (%s, %f, etc... )
-    *  @param ...     a variadic list that gets appended to the message in place of the format specifiers.
-    * 
-    *  @return None
-    ************************************************************************************************************************/
-    void logOutput(logLevel level, const char* message, ... );
-
-}
+*  @brief   Writes to the console a log message of \p level severity.
+* 
+*  @details A message function purely intended for logging purposes. 
+* 
+*           Example:
+* 
+*           @code{.cpp}
+*           logOutput(LOG_LEVEL_FATAL, "I took a bullet to the %s and i am %s.", "head", "hurt")
+*           @endcode
+* 
+*           would print out:
+* 
+*           [FATAL] I took a bullet to the head and i am hurt.
+*
+*  @param level   a level from the @ref logLevel struct, used purely for visual purposes
+*  @param message a message with format specifics included (%s, %f, etc... )
+*  @param ...     a variadic list that gets appended to the message in place of the format specifiers.
+* 
+*  @return None
+************************************************************************************************************************/
+void logOutput(logLevel level, const char* message, ... );
 
 
 
@@ -71,7 +63,7 @@ namespace logger{
  * 
  *  @return None
  ************************************************************************************************************************/ 
-#define FATAL_MSG(message, ...) logger::logOutput(LOG_LEVEL_FATAL, message, ##__VA_ARGS__);
+#define FATAL_MSG(message, ...) logOutput(LOG_LEVEL_FATAL, message, ##__VA_ARGS__);
 
 
 
@@ -84,7 +76,7 @@ namespace logger{
  * 
  *  @return None
  ************************************************************************************************************************/ 
-#define ERROR_MSG(message, ...) logger::logOutput(LOG_LEVEL_ERROR, message, ##__VA_ARGS__);
+#define ERROR_MSG(message, ...) logOutput(LOG_LEVEL_ERROR, message, ##__VA_ARGS__);
 #endif
 
 
@@ -98,7 +90,7 @@ namespace logger{
  * 
  *  @return None
  ************************************************************************************************************************/ 
-#define WARN_MSG(message, ...)  logger::logOutput(LOG_LEVEL_WARN,  message, ##__VA_ARGS__);
+#define WARN_MSG(message, ...)  logOutput(LOG_LEVEL_WARN,  message, ##__VA_ARGS__);
 #else
 /** DISABLED --> @ref LOG_WARN_ENABLED is set to 0 */
 #define WARN_MSG(message, ...)
@@ -115,7 +107,7 @@ namespace logger{
  * 
  *  @return None
  ************************************************************************************************************************/ 
-#define INFO_MSG(message, ...)  logger::logOutput(LOG_LEVEL_INFO,  message, ##__VA_ARGS__);
+#define INFO_MSG(message, ...)  logOutput(LOG_LEVEL_INFO,  message, ##__VA_ARGS__);
 #else
 /** DISABLED --> @ref LOG_INFO_ENABLED is set to 0 */
 #define INFO_MSG(message, ...)
@@ -132,7 +124,7 @@ namespace logger{
  * 
  *  @return None
  ************************************************************************************************************************/ 
-#define DEBUG_MSG(message, ...) logger::logOutput(LOG_LEVEL_DEBUG, message, ##__VA_ARGS__);
+#define DEBUG_MSG(message, ...) logOutput(LOG_LEVEL_DEBUG, message, ##__VA_ARGS__);
 #else
 /** DISABLED --> @ref LOG_DEBUG_ENABLED is set to 0 */
 #define DEBUG_MSG(message, ...)
@@ -149,7 +141,7 @@ namespace logger{
  * 
  *  @return None
  ************************************************************************************************************************/ 
-#define TRACE_MSG(message, ...) logger::logOutput(LOG_LEVEL_TRACE, message, ##__VA_ARGS__);
+#define TRACE_MSG(message, ...) logOutput(LOG_LEVEL_TRACE, message, ##__VA_ARGS__);
 #else
 /** DISABLED --> @ref LOG_TRACE_ENABLED is set to 0 */
 #define TRACE_MSG(message, ...)

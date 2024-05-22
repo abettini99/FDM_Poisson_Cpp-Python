@@ -52,9 +52,9 @@ using b8 =  char;
 // boolean //
 // ------- // 
 /** true boolean (in text form) */
-#define TRUE         1
+#define TRUE  1
 /** false boolean (in text form) */
-#define FALSE        0
+#define FALSE 0
 
 
 
@@ -65,7 +65,10 @@ using b8 =  char;
 #define EXIT_SUCCESS          0
 /** exit code upon unknown failure */
 #define EXIT_FAILURE_UNKNOWN -1
-
+/** exit code upon assertion failure */
+#define EXIT_FAILURE_ASSERTION 1
+/** exit code upon iteration failure */
+#define EXIT_FAILURE_ITERATION 2
 
 
 // ----------------- //

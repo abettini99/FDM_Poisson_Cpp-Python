@@ -29,7 +29,7 @@ def plot(x : npt.NDArray[np.float64],
     fig, ax = plt.subplots(1,1, squeeze=False, figsize=(6.4,4.8))
 
     # Plot filled contour
-    ax[0,0].contourf(x,y,f, levels=levels)
+    axc = ax[0,0].contourf(x,y,f, levels=levels)
 
     # Set limits
     ax[0,0].set_xlim(x[0,:][0], x[0,:][-1])
@@ -53,5 +53,7 @@ def plot(x : npt.NDArray[np.float64],
                         bottom=True, top=True, left=True, right=True)
     ax[0,0].tick_params(which='minor', length=1.75, width=2, direction='out',
                         bottom=True, top=True, left=True, right=True)
-
+    ax[0,0].set_aspect('equal')
+    fig.colorbar(axc)
+    
     return fig, ax
