@@ -163,6 +163,7 @@ int main(){
         rk = rkm1 - alphak*Apk;
 
         err = std::sqrt( rk.dot(rk)/rk.size() );
+        FATAL_ITERATION(kappa, err);
         INFO_MSG("kappa = %-5u err = %1.4e", kappa, err);
     } while ((kappa < kappaMax) && (err > tol)); // Termination criteria
     
