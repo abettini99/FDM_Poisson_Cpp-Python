@@ -16,7 +16,9 @@ plt.style.use('src/post/plotting.style')
 #
 #  @return fig   container of all plot elements
 #  @return ax    (list of) container(s) of all elements of individual (sub-)plot in the \p fig.
-def plot(x : npt.NDArray[np.float64], y : npt.NDArray[np.float64], f : npt.NDArray[np.float64], 
+def plot(x : npt.NDArray[np.float64], 
+         y : npt.NDArray[np.float64], 
+         f : npt.NDArray[np.float64], 
          levels : int = 10,
          title  : str = None,
          xlabel : str = None,
