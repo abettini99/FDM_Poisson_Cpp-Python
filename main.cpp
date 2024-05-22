@@ -20,8 +20,8 @@ int main(){
     //## ================== ##//
     //## Provide parameters ##//
     //## ================== ##//
-    const u32 imax  = 21;              /**< #gridpoints in x */
-    const u32 jmax  = 21;              /**< #gridpoints in y */
+    const u32 imax  = 1001;              /**< #gridpoints in x */
+    const u32 jmax  = 1001;              /**< #gridpoints in y */
     const f64 Lx[2] = {0., 1.*EIGEN_PI}; /**< domain endpoints in x */
     const f64 Ly[2] = {0., 1.*EIGEN_PI}; /**< domain endpoints in y */
 
@@ -82,6 +82,7 @@ int main(){
         const u32 idx = j*imax + i;
         coefficients.push_back(  Eigen::Triplet<f64>(idx,idx,1)  );
         b[idx] = boundaries.South[i];
+        u[idx] = boundaries.South[i]; 
     }
     // North Boundary
     j=jmax-1;
@@ -89,6 +90,7 @@ int main(){
         const u32 idx = j*imax + i;
         coefficients.push_back(  Eigen::Triplet<f64>(idx,idx,1)  );
         b[idx] = boundaries.North[i];
+        u[idx] = boundaries.North[i]; 
     }
     // West Boundary
     i64 i=0;
@@ -96,6 +98,7 @@ int main(){
         const u32 idx = j*imax + i;
         coefficients.push_back(  Eigen::Triplet<f64>(idx,idx,1)  );
         b[idx] = boundaries.West[j];
+        u[idx] = boundaries.West[j]; 
     }
     // East Boundary
     i=imax-1;
@@ -103,19 +106,55 @@ int main(){
         const u32 idx = j*imax + i;
         coefficients.push_back(  Eigen::Triplet<f64>(idx,idx,1)  );
         b[idx] = boundaries.East[j];
+        u[idx] = boundaries.East[j]; 
     }
     // Fill out sparse matrix
     A.setFromTriplets(coefficients.begin(), coefficients.end());
 
+    std::cout<<"Matrix-Vector setup finished\n";
+
+
     //## ================ ##//
     //## Solution Routine ##//
     //## ================ ##//
+    // Conjugate Gradient
+    // - see Section 3.1 https://homepage.tudelft.nl/d2b4e/burgers/lin_notes.pdf
+    u32 kappa = 0;
+    u32 kappaMax = 5000;
+    f64 tol = 1e-6;
+    f64 err = 1.;
+    EigenDefs::Vector<f64> rk(n);
+    EigenDefs::Vector<f64> rkm1(n);
+    EigenDefs::Vector<f64> rkm2(n);
+    EigenDefs::Vector<f64> pk(n);
+    rk = b - A*u;
+    f64 alphak, betak;
+    
+    while ((kappa < kappaMax) && (err > tol)){
+        kappa++; rkm2 = 1.*rkm1; rkm1 = 1.*rk; 
+        if (kappa==1) pk = 1.*rk;
+        else{
+            betak = rkm1.dot(rkm1) / rkm2.dot(rkm2);
+            pk    = rkm1 + betak*pk;
+        }
+        alphak = rkm1.dot(rkm1) / pk.dot(A*pk);
+        u = u + alphak*pk;
+        rk = rkm1 - alphak*A*pk;
+
+        err = std::sqrt( rk.dot(rk)/rk.size() );
+        if (kappa%50 == 0) std::cout<<"kappa="<<kappa<<" err="<<err<<"\n";
+    }
+    
+    
+    
     // - see https://eigen.tuxfamily.org/dox/group__TutorialSparse.html
     // - see https://eigen.tuxfamily.org/dox/classEigen_1_1SparseLU.html
-    Eigen::SparseLU<Eigen::SparseMatrix<f64>> solver(A);  /**< LU factorization of A */
-    solver.analyzePattern(A); // Compute the column permutation to minimize the fill-in
-    solver.factorize(A);      // Compute the numerical factorization 
-    u = solver.solve(b);      // use the factorization to solve for the given right hand side
+    // Eigen::SparseLU<Eigen::SparseMatrix<f64>> solver(A);  /**< LU factorization of A */
+    // solver.analyzePattern(A); // Compute the column permutation to minimize the fill-in
+    // solver.factorize(A);      // Compute the numerical factorization 
+    // u = solver.solve(b);      // use the factorization to solve for the given right hand side
+
+    std::cout<<"Solution found\n";
 
     //## =============== ##//
     //## Export solution ##//
@@ -140,7 +179,7 @@ int main(){
     }
     dataFile.close();
 
-    std::cout<<"Finished solving Poisson problem!\n";
+    std::cout<<"Solution saved\n";
 
     return EXIT_SUCCESS;
 }
