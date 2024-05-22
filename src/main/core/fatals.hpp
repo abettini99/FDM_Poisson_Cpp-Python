@@ -3,8 +3,6 @@
 #include "definesStandard.hpp"
 #include "logger.hpp"
 
-#include <cmath>
-
 /************************************************************************************************************************ 
  *  @brief Checks a boolean expression. If false, a fatal-error is passed to the prompt. Cannot be disabled.
  * 
@@ -22,12 +20,14 @@
     }                                                                                                                  \
 }                                                                                                                      \
 
+
+
 /************************************************************************************************************************ 
  *  @brief Checks whether the iteration error is nan or not. If it is, a fatal-error is passed to the prompt. Cannot be 
  *         disabled.
  * 
- *  @param kappa     iteration number
- *  @param iterError residual error estimate
+ *  @param kappa     iteration number that will be displayed during the crash.
+ *  @param iterError iteration error that is checked for nans.
  * 
  *  @return None
  ************************************************************************************************************************/ 
