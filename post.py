@@ -2,8 +2,8 @@ import numpy as np
 import numpy.typing as npt
 import matplotlib.pyplot as plt
 
-from src.post.readDataBinary import readDataBinary
-from src.post.plotFilledContour import plotFilledContour
+import src.post.binaryData as BinaryData
+import src.post.filledContour as FilledContour
 
 ##// ============== //##
 ##// Postprocessing //##
@@ -11,7 +11,7 @@ from src.post.plotFilledContour import plotFilledContour
 fileName = "./bin/data.bin"
 
 # Get solution
-x, y, u  = readDataBinary(fileName) # u[j,i], not u[i,j]
+x, y, u  = BinaryData.read(fileName) # u[j,i], not u[i,j]
 
 # Get gradients of solution
 dudy,    dudx    = np.gradient(u,    y[:,0], x[0,:], edge_order=2)
@@ -28,22 +28,22 @@ divgradu  = d2udxdx + d2udydy
 ##// Plotting //##
 ##// ======== //##
 # solution plot
-plotFilledContour(x,y,u,         
-                  levels=10,
-                  title =r'$u\,\,[-]$',
-                  xlabel=r'$x\,\,[-]$',
-                  ylabel=r'$y\,\,[-]$')
+FilledContour.plot(x,y,u,         
+                   levels=10,
+                   title =r'$u\,\,[-]$',
+                   xlabel=r'$x\,\,[-]$',
+                   ylabel=r'$y\,\,[-]$')
 # curl(grad(u)) plot
-plotFilledContour(x,y,curlgradu, 
-                  levels=10,
-                  title =r'$\nabla\times\nabla u\,\,[-]$',
-                  xlabel=r'$x\,\,[-]$',
-                  ylabel=r'$y\,\,[-]$')
+FilledContour.plot(x,y,curlgradu, 
+                   levels=10,
+                   title =r'$\nabla\times\nabla u\,\,[-]$',
+                   xlabel=r'$x\,\,[-]$',
+                   ylabel=r'$y\,\,[-]$')
 # div(grad(u)) plot
-plotFilledContour(x,y,divgradu,  
-                  levels=10,
-                  title =r'$\nabla\cdot\nabla u\,\,[-]$',
-                  xlabel=r'$x\,\,[-]$',
-                  ylabel=r'$y\,\,[-]$')
+FilledContour.plot(x,y,divgradu,  
+                   levels=10,
+                   title =r'$\nabla\cdot\nabla u\,\,[-]$',
+                   xlabel=r'$x\,\,[-]$',
+                   ylabel=r'$y\,\,[-]$')
 
 plt.show()

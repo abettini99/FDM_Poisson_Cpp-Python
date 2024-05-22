@@ -1,7 +1,7 @@
 #pragma once
 
-#include "definesStandard.hpp" 
-#include "definesEigen.hpp" 
+#include "core/definesStandard.hpp" 
+#include "core/definesEigen.hpp" 
 
 /************************************************************************************************************************ 
  *  @brief Any mesh-related functions/classes are represented in this namespace.

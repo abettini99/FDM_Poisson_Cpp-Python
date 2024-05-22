@@ -3,8 +3,8 @@
  *    - Typedefs:   used to create an additional name for another data type, but does not create a new type.
  *    - Type alias: same as typedefs, but allows for templates, e.g. Vector<f64>, Vector<i32>.
  ************************************************************************************************************************/
-#include "definesStandard.hpp"
-#include "definesEigen.hpp"     // arguably, we do not really need this.
+#include "core/definesStandard.hpp"
+#include "core/definesEigen.hpp"     // arguably, we do not really need this.
 #include "mesh.hpp"
 #include "valueSource.hpp"
 
