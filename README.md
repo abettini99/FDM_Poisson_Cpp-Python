@@ -1,7 +1,7 @@
 
 # **Finite Difference Poisson — C++/Eigen + Python**
 
-This repository provides an instructive example of a somewhat-simplistic solver for the 2D Poisson problem. We use C++ for the solver itself, and Python 3 for the postprocessing step. This is the first part of an extensive series to the generalisation to a SEEC (Spectral Element Exterior Calculus) solver. We begin by constructing a simple framework for simple problems, and extending it to suit increasingly-complex problems. The first few repositories are geared towards exposing interested people to lower-level languages simulatenously, whereas the latter will exposure to more-modern methods+techniques to solve problems.
+This repository provides an instructive example of a somewhat-simplistic solver for the 2D Poisson problem. We use C++ for the solver itself, and Python 3 for the postprocessing step. This is the first part of an extensive series to the generalisation to a SEEC (Spectral Element Exterior Calculus) solver. We begin by constructing a simple framework for simple problems, and extending it to suit increasingly-complex problems. The first few repositories are geared towards exposing interested people to lower-level languages, whereas the latter will exposure to more-modern methods+techniques to solve problems.
 
 ### Motivation
 Currently in the TUDelft Aerospace Faculty, most numerics is taught at the bachelor-level and masters-level via Python/Matlab. This is perfectly fine as most examples are simple enough to be done in these languages. However, very little exposure to lower-level languages and computing codes leaves most numericist-to-be at a disadvantage in the future. We wish to remedy this. 
