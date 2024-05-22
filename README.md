@@ -1,4 +1,3 @@
-```
-Finite Difference Poisson using C++/Eigen and Python
-```
+
+# **Finite Difference Poisson using C++/Eigen and Python**
 
