@@ -14,4 +14,14 @@ By the end of this repository, you should know the following:
 * How we solved the problem using iterative methods.
 * Why we save the solution the way it is, and why we use Python to postprocess it.
 
+## Requirements
+
+### LaTeX
+
+### Cmake
+
+### COMPILERS ADD INFO HERE
+
+### Python
+
 ## Framework
