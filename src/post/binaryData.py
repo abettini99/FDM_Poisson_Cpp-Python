@@ -17,9 +17,9 @@ import numpy.typing as npt
 #  @return x 2D numpy array of data x-positions
 #  @return y 2D numpy array of data y-positions
 #  @return u 2D numpy array of data values
-def readDataBinary(fileName: str) -> tuple[npt.NDArray[np.float32], 
-                                           npt.NDArray[np.float32],
-                                           npt.NDArray[np.float32]]:
+def read(fileName: str) -> tuple[npt.NDArray[np.float32], 
+                           npt.NDArray[np.float32],
+                           npt.NDArray[np.float32]]:
 
     # Open file
     with open(fileName, mode='rb') as file: # b is important -> binary

@@ -16,12 +16,12 @@ plt.style.use('src/post/plotting.style')
 #
 #  @return fig   container of all plot elements
 #  @return ax    (list of) container(s) of all elements of individual (sub-)plot in the \p fig.
-def plotFilledContour(x : npt.NDArray[np.float64], y : npt.NDArray[np.float64], f : npt.NDArray[np.float64], 
-                      levels : int = 10,
-                      title  : str = None,
-                      xlabel : str = None,
-                      ylabel : str = None
-                      ) -> tuple[plt.Figure, Any]:
+def plot(x : npt.NDArray[np.float64], y : npt.NDArray[np.float64], f : npt.NDArray[np.float64], 
+         levels : int = 10,
+         title  : str = None,
+         xlabel : str = None,
+         ylabel : str = None
+         ) -> tuple[plt.Figure, Any]:
 
     # Create figure and axes
     fig, ax = plt.subplots(1,1, squeeze=False, figsize=(6.4,4.8))

@@ -18,13 +18,14 @@ add_executable(${PROJECT} main.cpp)
 target_sources(${PROJECT}
     # no need to add headers here, only sources are required
     PRIVATE
-        # ${PROJECT_SOURCE_DIR}/src/solver/insertCoefficients.cpp
+        ${PROJECT_SOURCE_DIR}/src/solver/core/logger.cpp
 )
 
 target_include_directories(${PROJECT} 
     PRIVATE
         # where the project itself will look for internal headers
         ${PROJECT_SOURCE_DIR}/src/solver/
+        ${PROJECT_SOURCE_DIR}/src/solver/core/
     PUBLIC
         # where the project will look for public headers
         ${PROJECT_SOURCE_DIR}/external/eigen/

@@ -5,6 +5,7 @@
  ************************************************************************************************************************/
 #include "core/definesStandard.hpp"
 #include "core/definesEigen.hpp"     // arguably, we do not really need this.
+#include "core/logger.hpp"
 #include "mesh.hpp"
 #include "valueSource.hpp"
 
@@ -111,7 +112,7 @@ int main(){
     // Fill out sparse matrix
     A.setFromTriplets(coefficients.begin(), coefficients.end());
 
-    std::cout<<"Matrix-Vector setup finished\n";
+    INFO_MSG("Matrix-Vector setup finished");
 
 
     //## ================ ##//
@@ -122,7 +123,7 @@ int main(){
     u32 kappa = 0;
     u32 kappaMax = 5000;
     f64 tol = 1e-6;
-    f64 err = 1.;
+    f64 err = 1/0.0;
     EigenDefs::Vector<f64> rk(n);
     EigenDefs::Vector<f64> rkm1(n);
     EigenDefs::Vector<f64> rkm2(n);
@@ -142,7 +143,7 @@ int main(){
         rk = rkm1 - alphak*A*pk;
 
         err = std::sqrt( rk.dot(rk)/rk.size() );
-        if (kappa%50 == 0) std::cout<<"kappa="<<kappa<<" err="<<err<<"\n";
+        if (kappa%50 == 0) INFO_MSG("kappa = %-5u err = %1.4e", kappa, err);
     }
     
     
@@ -153,8 +154,6 @@ int main(){
     // solver.analyzePattern(A); // Compute the column permutation to minimize the fill-in
     // solver.factorize(A);      // Compute the numerical factorization 
     // u = solver.solve(b);      // use the factorization to solve for the given right hand side
-
-    std::cout<<"Solution found\n";
 
     //## =============== ##//
     //## Export solution ##//
@@ -179,7 +178,7 @@ int main(){
     }
     dataFile.close();
 
-    std::cout<<"Solution saved\n";
+    INFO_MSG("Solution saved.");
 
     return EXIT_SUCCESS;
 }
