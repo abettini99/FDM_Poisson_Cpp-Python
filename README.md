@@ -11,7 +11,7 @@ By the end of this repository, you should know the following:
 * Why we are setting up a framework for such a simple problem.
 * Why/how we setup typedefs and logging methods (optional).
 * How we setup the problem to be solved.
-* How we solved the problem using iterative methods.
+* How we solved the problem using iterative methods (optional).
 * Why we save the solution the way it is, and why we use Python to postprocess it.
 
 ## Requirements
