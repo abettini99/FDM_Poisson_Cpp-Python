@@ -120,52 +120,57 @@ int main(){
     // - see Section 4.1 https://homepage.tudelft.nl/d2b4e/burgers/lin_notes.pdf
     Eigen::SparseMatrix<f64> Mm1(n,n);          /**< Inversed Preconditioner M^-1*/
     Mm1 = A.diagonal().asDiagonal().inverse();
+    // f64 Mm1 = 1.;
 
     // Preconditioned Conjugate Gradient (PCG)
     // - see Section 3.1 https://homepage.tudelft.nl/d2b4e/burgers/lin_notes.pdf
     // - see Section 4.1 https://homepage.tudelft.nl/d2b4e/burgers/lin_notes.pdf
+    // - see https://en.wikipedia.org/wiki/Conjugate_gradient_method#The_preconditioned_conjugate_gradient_method
 
     // Initialization
     u32 kappa = 0;          /**< iterate number*/
     u32 kappaMax = 5000;    /**< max iterate allowed */
     f64 tol = 1e-15;        /**< acceptable tolerance */
     f64 err = 1/0.0;        /**< residual error */
-    EigenDefs::Vector<f64> rk(n), rkm1(n), rkm2(n); /**< residual vector */
-    EigenDefs::Vector<f64> zk(n), zkm1(n), zkm2(n); /**< preconditioned residual vector */
+    EigenDefs::Vector<f64> rk(n), rkp1(n); /**< residual vector */
+    EigenDefs::Vector<f64> zk(n), zkp1(n); /**< preconditioned residual vector */
     EigenDefs::Vector<f64> pk(n);                   /**< search/conjugate direction vector */
     EigenDefs::Vector<f64> Apk(n);                  /**< search/conjugate direction vector */
     f64 alphak, betak;                              /**< update coefficients */
+    
+    kappa = 0;
     rk = b - A*u;
+    zk = Mm1*rk;
+    pk = zk;
 
     do {
-
-        // Calculate preconditioning residual vector
-        zk = Mm1*rk;                            
-
-        // Update kappa
-        kappa++;
-        rkm2 = rkm1; rkm1 = rk; 
-        zkm2 = zkm1; zkm1 = zk;
-
-        // Update of pk (search direction)
-        if (kappa==1) pk = zk;
-        else{
-            betak = rkm1.dot(zkm1) / rkm2.dot(zkm2);
-            pk    = zkm1 + betak*pk;
-        }
-
         // Update iterate
         Apk = A*pk;
-        alphak = rkm1.dot(zkm1) / pk.dot(Apk);
+        alphak = rk.dot(zk) / pk.dot(Apk);
         u = u + alphak*pk;
 
         // Update residual
-        rk = rkm1 - alphak*Apk;
-
+        rkp1 = rk - alphak*Apk;
         err = std::sqrt( rk.dot(rk)/rk.size() );
+
+        // Termination criteria
         FATAL_ITERATION(kappa, err);
-        INFO_MSG("kappa = %-5u err = %1.4e", kappa, err);
-    } while ((kappa < kappaMax) && (err > tol)); // Termination criteria
+        INFO_MSG("kappa = %-5u err = %1.4e", kappa, err); 
+        if (tol > err) break;
+
+        // Calculate preconditioning residual vector
+        zkp1 = Mm1*rkp1;                
+
+        // Update search direction
+        betak = rkp1.dot(zkp1) / rk.dot(zk);
+        pk    = zkp1 + betak*pk;    
+
+        // Update kappa
+        kappa++;
+        rk = rkp1; 
+        zk = zkp1;
+
+    } while (kappa < kappaMax); 
     
 
     // - see https://eigen.tuxfamily.org/dox/group__TutorialSparse.html
