@@ -11,7 +11,7 @@
  * 
  *  @return None
  ************************************************************************************************************************/ 
-#define FATAL_ASSERT(expr, message)                                                                                    \
+#define CHECK_FATAL_ASSERT(expr, message)                                                                              \
 {                                                                                                                      \
     if(expr){}                                                                                                         \
     else {                                                                                                             \
@@ -31,7 +31,7 @@
  * 
  *  @return None
  ************************************************************************************************************************/ 
-#define FATAL_ITERATION(kappa, iterError)                                                               \
+#define CHECK_FATAL_ITERERROR(kappa, iterError)                                                         \
 {                                                                                                       \
     if(iterError==iterError){}                                                                          \
     else {                                                                                              \

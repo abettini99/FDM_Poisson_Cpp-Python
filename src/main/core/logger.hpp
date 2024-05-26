@@ -56,7 +56,8 @@ void logOutput(logLevel level, const char* message, ... );
 
 
 /************************************************************************************************************************ 
- *  @brief Throws a fatal-error log message to the prompt. Does not crash the code. 
+ *  @brief Throws a fatal-error log message to the prompt. Does not crash the code. Preferrably used in a function that
+ *  invokes a crash.
  * 
  *  @param message a message to throw before the code crashs. Message uses format specifiers.
  *  @param ...     a variadic list that gets appended to the message in place of the format specifiers.

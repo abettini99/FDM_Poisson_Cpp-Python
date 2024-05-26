@@ -22,6 +22,7 @@ target_sources(${PROJECT}
         ${PROJECT_SOURCE_DIR}/src/main/core/logger.cpp
         ${PROJECT_SOURCE_DIR}/src/main/preconditioner/Jacobi.cpp
         ${PROJECT_SOURCE_DIR}/src/main/preconditioner/incompleteCholesky.cpp
+        ${PROJECT_SOURCE_DIR}/src/main/solver/CG.cpp
 )
 
 target_include_directories(${PROJECT} 
